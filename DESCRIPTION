@@ -1,0 +1,19 @@
+Package: photoTools
+Title: Tools to work with photos in R
+Version: 0.0.1
+Authors@R: 
+    person("Iain", "Bennett", , "iain.t.bennett@gmail.com", role = c("aut", "cre"))
+Description: 
+    Functions and shiny apps to simplify manipulation and visualisation of exif data.
+License: Apache License (>= 2)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Depends: 
+    R (>= 2.10)
+Imports: 
+    magrittr,
+    shiny (>= 1.0),
+    tibble (>= 3.0.0),
+    exifr (>= 0.3.2),
+    dplyr (>= 0.8.4)
