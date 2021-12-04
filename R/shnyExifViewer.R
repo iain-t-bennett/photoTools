@@ -22,9 +22,6 @@ ExifViewerUI <- function() {
     # Application title
     shiny::titlePanel("ExifViewer"),
 
-    
-    
-    # Sidebar with a slider input for number of bins
     shiny::sidebarLayout(
       shiny::sidebarPanel(
         shiny::fileInput("upload", NULL, buttonLabel = "Upload...", multiple = FALSE)

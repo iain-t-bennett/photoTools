@@ -7,7 +7,7 @@
 shnyExifMap <- function(){
   if (interactive()) {
     options(shiny.maxRequestSize = 20 * 1024^2)
-    shiny::shinyApp(ui = ExifMapUI(), server = ExifMapServer)
+    shiny::shinyApp(ui = ExifMapUI(apikey = Sys.getenv("GOOGLE_MAPS_APIKEY")), server = ExifMapServer)
   } else {
     cat("Shiny apps can only be run interactively")
   }
@@ -15,7 +15,7 @@ shnyExifMap <- function(){
 
 # UI for the viewer
 
-ExifMapUI <- function() {
+ExifMapUI <- function(apikey) {
   shiny::fluidPage(
 
     # Application title
@@ -25,7 +25,7 @@ ExifMapUI <- function() {
     shiny::sidebarLayout(
       shiny::sidebarPanel(
         shiny::fileInput("upload", NULL, buttonLabel = "Upload...", multiple = FALSE),
-        shiny::textInput("txtapikey", label = "Google Maps API key", value = Sys.getenv("GOOGLE_MAPS_APIKEY")),
+        shiny::textInput("txtapikey", label = "Google Maps API key", value = apikey),
         shiny::sliderInput("sldZoom", label = "Zoom level", min = 1, max = 25, value = 18),
         shiny::tableOutput("tabExif")
       ),
