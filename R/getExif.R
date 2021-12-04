@@ -71,7 +71,9 @@ getExif <- function(files_to_read) {
   # read exif data
   if (length(files_to_read)>0){
     exif_data_raw <- exifr::read_exif(files_to_read,  tags = selected_tags)  
-  } 
+  } else {
+    exif_data_raw <- null_data
+  }
   
   # expand read tags to all expected and 
   # add posixct dates 

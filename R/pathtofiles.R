@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-path_to_files <- function(paths_to_read){
+pathtofiles <- function(paths_to_read){
   # get the list of files to consider
   files_list <- list()
   for (i in 1:length(paths_to_read)){
