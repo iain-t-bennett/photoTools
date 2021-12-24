@@ -13,9 +13,13 @@ Depends:
     R (>= 2.10),
     ggplot2(>= 3.3.0)
 Imports: 
+    assertthat,
     magrittr,
     httr,
     RgoogleMaps,
+    jsonlite,
+    lutz,
+    zoo,
     shiny (>= 1.0),
     tibble (>= 3.0.0),
     exifr (>= 0.3.2),

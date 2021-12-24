@@ -63,7 +63,7 @@ gmplot <- function(coords_to_fit,
         cntrlon = geosphere::midPoint(p1 = c(maxlon,maxlat), p2 = c(minlon,minlat))[1]
       )
     coord_center <- c(rng$cntrlat, rng$cntrlon)
-    est_zoom <- min(rng$zm, maxzoom)
+    est_zoom <- min(rng$zm-1, maxzoom)
   }
   
   # build the url

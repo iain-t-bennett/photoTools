@@ -17,7 +17,8 @@ getExif <- function(files_to_read) {
     'GPSLatitude',
     'GPSLongitude',
     'GPSAltitudeRef',
-    'GPSAltitude'
+    'GPSAltitude',
+    'ShutterCount'
     )
   
   selected_tags_char <- c(
