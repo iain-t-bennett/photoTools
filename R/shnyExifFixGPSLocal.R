@@ -181,16 +181,16 @@ ExifFixGPSLocalServer <- function(input, output) {
   
   # reactives for navigation through files
   
-  fileIndex <- reactiveVal(1)
+  fileIndex <- shiny::reactiveVal(1)
   
-  output$txtStatus <- renderText({
+  output$txtStatus <- shiny::renderText({
     paste0(fileIndex(), "/", nrow(exif_data))
   })
   
   # reactive containing GPS coordinates nearby in time to the current file
   # create date time from google maps history
   
-  nearGPS <- reactive({
+  nearGPS <- shiny::reactive({
     req(fileIndex())
     this.time <- exif_data$PosixCreateDate[fileIndex()]
     
@@ -210,7 +210,7 @@ ExifFixGPSLocalServer <- function(input, output) {
   # centering the map
   # based on user selections on scope
   
-  locations_in_scope <- reactive({
+  locations_in_scope <- shiny::reactive({
     
     this.df <- dplyr::slice(exif_data, fileIndex())
     
@@ -251,7 +251,7 @@ ExifFixGPSLocalServer <- function(input, output) {
   
   # preview of the image 
   
-  output$imgPre <- renderImage({
+  output$imgPre <- shiny::renderImage({
     this.src <- exif_data$SourceFile[fileIndex()]
     if (exif_data$FileType[fileIndex()] %in% c("JPEG", "PNG", "HEIC", "GIF")) {
       # Return a list containing the filename
@@ -271,7 +271,7 @@ ExifFixGPSLocalServer <- function(input, output) {
   
   # LOCF & NOCB previews 
   
-  output$imgLOCF <- renderImage({
+  output$imgLOCF <- shiny::renderImage({
     this.src <- exif_data$LOCF_GPSSource[fileIndex()]
     # Return a list containing the filename
     list(
@@ -284,7 +284,7 @@ ExifFixGPSLocalServer <- function(input, output) {
     
   }, deleteFile = FALSE)
   
-  output$imgNOCB <- renderImage({
+  output$imgNOCB <- shiny::renderImage({
     this.src <- exif_data$NOCB_GPSSource[fileIndex()]
     # Return a list containing the filename
     list(
@@ -299,21 +299,21 @@ ExifFixGPSLocalServer <- function(input, output) {
   
   # info captions for the LOCF, NOCB and current photo
   
-  output$txtLOCF <- renderText({
+  output$txtLOCF <- shiny::renderText({
     this.file <- exif_data$LOCF_GPSSource[fileIndex()]
     this.lat <- exif_data$LOCF_GPSLatitude[fileIndex()]
     this.long <- exif_data$LOCF_GPSLongitude[fileIndex()]
     paste0(this.file, "\n", this.lat, ",", this.long)
   })
   
-  output$txtFile <- renderText({
+  output$txtFile <- shiny::renderText({
     this.file <- exif_data$FileName[fileIndex()]
     this.lat <- exif_data$GPSLatitude[fileIndex()]
     this.long <- exif_data$GPSLongitude[fileIndex()]
     paste0(this.file, "\n", this.lat, ",", this.long)
   })
   
-  output$txtNOCB <- renderText({
+  output$txtNOCB <- shiny::renderText({
     this.file <- exif_data$NOCB_GPSSource[fileIndex()]
     this.lat <- exif_data$NOCB_GPSLatitude[fileIndex()]
     this.long <- exif_data$NOCB_GPSLongitude[fileIndex()]
@@ -323,7 +323,7 @@ ExifFixGPSLocalServer <- function(input, output) {
   # reactive of a plot centered on the selected GPS points
   # and scaled to fit the selected points
   
-  basismap <- reactive({
+  basismap <- shiny::reactive({
     
     loc.df <- locations_in_scope()
     
@@ -338,7 +338,7 @@ ExifFixGPSLocalServer <- function(input, output) {
   # renders the plot - so can add/remove points without re collecting the 
   # background
   
-  output$pltMap <- renderPlot({
+  output$pltMap <- shiny::renderPlot({
     rc <- basismap()
     
     this.df <- dplyr::slice(exif_data, fileIndex())
@@ -380,7 +380,7 @@ ExifFixGPSLocalServer <- function(input, output) {
   # I for imputed GPS (LOCF/NOCB)
   # M for manually added GPS
   
-  observeEvent(input$btnWrite, {
+  shiny::observeEvent(input$btnWrite, {
     
     curr.exif <- exif_data %>%
       dplyr::slice(fileIndex())
@@ -439,7 +439,7 @@ ExifFixGPSLocalServer <- function(input, output) {
   # other navigation buttons 
   # skip - go to the next file without doing anything
   
-  observeEvent(input$btnSkip, {
+  shiny::observeEvent(input$btnSkip, {
     # update the counter
     newVal <- min(fileIndex() + 1, nrow(exif_data))
     
@@ -449,7 +449,7 @@ ExifFixGPSLocalServer <- function(input, output) {
   # as files are physically moved going back will not always work...
   # go back
   
-  observeEvent(input$btnBack, {
+  shiny::observeEvent(input$btnBack, {
     # update the counter
     newVal <- max(fileIndex() - 1, 1)
     

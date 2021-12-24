@@ -40,7 +40,7 @@ ExifViewerUI <- function() {
 ExifViewerServer <- function(input, output) {
 
   # get the exif data 
-  metaExif <- reactive({
+  metaExif <- shiny::reactive({
     # wait until a file is loaded
     req(input$upload)
     
@@ -55,7 +55,7 @@ ExifViewerServer <- function(input, output) {
   })
   
   # display as a table
-  output$tabExif <- renderTable({
+  output$tabExif <- shiny::renderTable({
     
     t.mat <- metaExif() %>%
       t()

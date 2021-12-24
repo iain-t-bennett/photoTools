@@ -5,20 +5,34 @@
 #'
 #' @examples
 #' shnyViewer
-shnyExifViewerLocal <- function(exif_data){
+shnyExifViewerLocal <- function(exif_data, apikey = Sys.getenv("GOOGLE_MAPS_APIKEY")){
   
   if (interactive()) {
     
-    # pass the dataframe so available in app
+    # if no api key has been set/provided then prompt for it
+    if (api_key == ""){
+      api_key <- readline(prompt="Please enter google maps api key: ")  
+      Sys.setenv(GOOGLE_MAPS_APIKEY=api_key)
+    }
+    
+    # pass this dataframe so available in app
+    # do this by building a new environment to contain the app 
+    # and also any data/variables needed there
+    
     server_env <- new.env()
+    
+    # data/variables
     assign("exif_data", exif_data, server_env)
+    assign("api_key", api_key, server_env)
+    
+    # server/ui functions
     this_server <- ExifViewerLocalServer
     this_ui <- ExifViewerLocalUI
     environment(this_server) <- server_env
     environment(this_ui) <- server_env
     
     # launch the app
-    shiny::shinyApp(ui = this_ui(apikey = Sys.getenv("GOOGLE_MAPS_APIKEY")), 
+    shiny::shinyApp(ui = this_ui(),
                     server = this_server)
     
   } else {
@@ -28,7 +42,7 @@ shnyExifViewerLocal <- function(exif_data){
 
 # UI for the viewer
 
-ExifViewerLocalUI <- function(apikey) {
+ExifViewerLocalUI <- function() {
   shiny::fluidPage(
 
     title = "ExifViewerLocal",
@@ -48,7 +62,6 @@ ExifViewerLocalUI <- function(apikey) {
       ),
       shiny::column(4,
              shiny::helpText("Location"),
-             shiny::textInput("txtapikey", label = "Google Maps API key", value = apikey),
              shiny::sliderInput("sldZoom", label = "Zoom level", min = 1, max = 25, value = 18),
              shiny::hr(),
              shiny::plotOutput("pltMap")
@@ -63,11 +76,11 @@ ExifViewerLocalServer <- function(input, output) {
 
   # navigation controls
   
-  fileIndex <- reactiveVal(1)
+  fileIndex <- shiny::reactiveVal(1)
 
   # next
   
-  observeEvent(input$btnNext, {
+  shiny::observeEvent(input$btnNext, {
     # update the counter
     newVal <- min(fileIndex() + 1, nrow(exif_data))
     fileIndex(newVal)
@@ -75,7 +88,7 @@ ExifViewerLocalServer <- function(input, output) {
   
   # back
   
-  observeEvent(input$btnBack, {
+  shiny::observeEvent(input$btnBack, {
     # update the counter
     newVal <- max(fileIndex() - 1, 1)
     fileIndex(newVal)
@@ -83,7 +96,7 @@ ExifViewerLocalServer <- function(input, output) {
   
   # preview of image
   
-  output$imgPrev <- renderImage({
+  output$imgPrev <- shiny::renderImage({
     
     this.src <- exif_data$SourceFile[fileIndex()]
     this.width <- exif_data$ImageWidth[fileIndex()]
@@ -108,7 +121,7 @@ ExifViewerLocalServer <- function(input, output) {
   
   # show the exif data
   
-  output$tabMeta <- renderTable({
+  output$tabMeta <- shiny::renderTable({
     
     this.df <- dplyr::slice(exif_data,fileIndex())
     
@@ -121,7 +134,7 @@ ExifViewerLocalServer <- function(input, output) {
   })
   
   # get a map centered on the photo GPS
-  basismap <- reactive({
+  basismap <- shiny::reactive({
     req(input$txtapikey)
     
     this.df <- dplyr::slice(exif_data,fileIndex())
@@ -129,7 +142,7 @@ ExifViewerLocalServer <- function(input, output) {
     # check if coordinates exist
     
     if (!is.na(this.df$GPSLatitude)) {
-      rc <- gmplot(this.df, maxzoom = input$sldZoom, api_key = input$txtapikey)   
+      rc <- gmplot(this.df, maxzoom = input$sldZoom, api_key = api_key)   
     } else {
       rc <- ggplot() +
         ggtitle("No GPS locations")
@@ -139,7 +152,7 @@ ExifViewerLocalServer <- function(input, output) {
   })
   
   # display the plot
-  output$pltMap <- renderPlot({
+  output$pltMap <- shiny::renderPlot({
     rc <- basismap()
     rc
   })

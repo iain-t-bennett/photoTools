@@ -4,7 +4,7 @@
 \alias{shnyExifViewerLocal}
 \title{shnyViewer that shows EXIF data for an image}
 \usage{
-shnyExifViewerLocal(exif_data)
+shnyExifViewerLocal(exif_data, apikey = Sys.getenv("GOOGLE_MAPS_APIKEY"))
 }
 \value{
 SHINY APP

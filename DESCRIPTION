@@ -20,6 +20,7 @@ Imports:
     jsonlite,
     lutz,
     zoo,
+    geosphere,
     shiny (>= 1.0),
     tibble (>= 3.0.0),
     exifr (>= 0.3.2),
