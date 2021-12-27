@@ -100,13 +100,15 @@ modifyExif <- function(original_exif, new_exif){
       
       # for large files needed
       # TODO - move this to an installed file with package
-      #  this.args <- paste0(
-      #    ifelse(file.size(this.source) > 10^7, 
-      #           "-config '/Users/iainbenn/Documents/gitloc/PhotoImport/localdata/custom.config' -m ",
-      #           "-m "), 
-      #    this.args)
-      
-      this.args <- paste0("-m ", this.args)
+       this.args <- ifelse(file.size(this.source) > 10^7, 
+                           paste0("-config '", 
+                                  system.file("extdata/custom.config", 
+                                              package = "photoTools"), 
+                                  "' -m ", 
+                                  this.args),
+                           paste0("-m ", 
+                                  this.args) 
+          )
       
       # make the change
       
