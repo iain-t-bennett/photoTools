@@ -12,26 +12,40 @@ prepGMH <- function(takeoutjson){
   
   # read the data exported from google maps
   history <- jsonlite::read_json(takeoutjson)
+  locs <- history$locations
   
   hist2loc <- function(x){
-    rc <- c(x$timestampMs, x$latitudeE7, x$longitudeE7, x$accuracy)
+    null_vec <- rep(NA, 5)
+    rc <- c(x$latitudeE7, x$longitudeE7, x$accuracy, x$timestamp, x$source)
+    if(length(rc)!=5){
+      rc <- null_vec
+    } 
     return(rc)
   }
   
-  # get just the timestamps and locations from the data
   mtrx <- lapply(history$locations, hist2loc) %>%
     unlist() %>%
-    as.numeric() %>%
-    matrix(ncol = 4, byrow = TRUE) 
+    matrix(ncol = 5, byrow = TRUE) 
   
+  Gmap0 <- tibble::tibble(
+                         GPSLatitude = as.numeric(mtrx[,1]) / (10 ^7), 
+                         GPSLongitude = as.numeric(mtrx[,2]) / (10 ^7),
+                         Accuracy = as.numeric(mtrx[,3]),
+                         CreateDateC = mtrx[,4],
+                         Source = mtrx[,5]
+                         )
   
+
   # modify to match standards
-  Gmap1 <- tibble::tibble(CreateDate = as.POSIXct(mtrx[,1]/1000, origin = "1970-01-01"),
-                          GPSLatitude = mtrx[,2] / (10 ^7),
-                          GPSLongitude = mtrx[,3] / (10 ^7),
-                          Accuracy = mtrx[,4],
-                          AccuracyCat = ifelse(Accuracy < 800, "high", ifelse(Accuracy > 5000, "low", "mid")))
-  
+  Gmap1 <- Gmap0 %>%
+    dplyr::filter(!is.na(GPSLatitude),
+                  !is.na(GPSLongitude),
+                  !is.na(Accuracy),
+                  !is.na(CreateDateC),
+                  !is.na(Source)) %>%
+    dplyr::mutate(CreateDate = as.POSIXct(substr(CreateDateC,1,19), format = "%Y-%m-%dT%H:%M:%OS"),
+           AccuracyCat = ifelse(Accuracy < 800, "high", ifelse(Accuracy > 5000, "low", "mid"))
+           ) 
   
   # work out the time zone for each point
   Gmap2 <- Gmap1 %>%
