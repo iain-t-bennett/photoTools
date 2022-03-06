@@ -85,7 +85,7 @@ ExifFixTimeLocalServer <- function(input, output) {
   # convert NA to "" for relevant variables
   
   
-  existing_files <- tibble(FileName = existing_filenames,
+  existing_files <- tibble::tibble(FileName = existing_filenames,
                           DatePart = substr(FileName, 1,15),
                           UID = substr(FileName, 17,19),
                           id = as.numeric(UID)) 
@@ -125,6 +125,9 @@ ExifFixTimeLocalServer <- function(input, output) {
     MAKE <- exif_data$Make[fileIndex()]
     MODEL <- exif_data$Model[fileIndex()]
     
+    MAKE <- ifelse(is.na(MAKE), "", MAKE)
+    MODEL <- ifelse(is.na(MODEL), "", MODEL)
+    
     if (MAKE=="" & grepl("GOPR",exif_data$SourceFile[fileIndex()])){
       MAKE <- "GoPro"
       MODEL <- "HERO5 Session"
@@ -163,14 +166,14 @@ ExifFixTimeLocalServer <- function(input, output) {
                            ifelse(tm %in% c("", "U"), "UUUUUU", gsub(":","", tmN)),
                            sep = "_")
     
-    processed_files <- tibble(FileName = list.files(target_path),
+    processed_files <- tibble::tibble(FileName = list.files(target_path),
                               DatePart = substr(FileName, 1,15),
                               UID = substr(FileName, 17,19),
                               id = as.numeric(UID)) %>%
-      filter(nchar(FileName) > 10) 
+      dplyr::filter(nchar(FileName) > 10) 
     
     ids <- rbind(existing_files, processed_files) %>%
-      filter(DatePart == this.datepart) 
+      dplyr::filter(DatePart == this.datepart) 
     
     maxid <- max(ids$id, 0)
     
@@ -196,7 +199,7 @@ ExifFixTimeLocalServer <- function(input, output) {
     
     
     if (exif_data$FileType[fileIndex()] %in% c("JPEG", "PNG", "HEIC", "GIF")){
-      rc <- tibble(
+      rc <- tibble::tibble(
         CreateDate = dtm,
         ModifyDate = dtm,
         DateTimeOriginal = dtm,
@@ -205,7 +208,7 @@ ExifFixTimeLocalServer <- function(input, output) {
         Make = input$txtMake,
         Model = input$txtModel)
     } else {
-      rc <- tibble(
+      rc <- tibble::tibble(
         CreateDate = dtm,
         ModifyDate = dtm,
         DateTimeOriginal = dtm,
@@ -228,10 +231,10 @@ ExifFixTimeLocalServer <- function(input, output) {
     this.df <- new.exif()
     
     t.mat <- this.df %>%
-      transmute(CreateDate,ModifyDate,DateTimeOriginal,TrackCreateDate,TrackModifyDate,Make,Model) %>%
+      dplyr::transmute(CreateDate,ModifyDate,DateTimeOriginal,TrackCreateDate,TrackModifyDate,Make,Model) %>%
       t()
     
-    t.df <- tibble(Name = rownames(t.mat), Value = t.mat[,1])
+    t.df <- tibble::tibble(Name = rownames(t.mat), Value = t.mat[,1])
     t.df
     
   })

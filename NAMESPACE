@@ -2,6 +2,7 @@
 
 export(getExif)
 export(getNewExif)
+export(ggmplot)
 export(gmestzoom)
 export(gmplot)
 export(modifyExif)
